@@ -2,16 +2,20 @@
 Hi,This is my project Front Desk Entry Management
 
 TOOLS USED:
+
 ->My SQL workbench
 ->Eclipse IDE
 ->Tomcat Apache version 9.0
 ->Servlet and JAR Files
 
 PROGRAMMING LANGUAGE:
+
 back end: Java, JDBC, sql, servlet
+
 front end: html, css, bootstrap         
 
 DESCRIPTION:
+
 This web application can be usefull for front desk management person who will be in a situation
 where they have to manually record the datas of customers, clients, visitors,shareholders,delivery persons etc... 
 currently in contact with their respected workplace.If they have to change the records manually it is hard to search and modify it.
