@@ -5,7 +5,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalTime;
-
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -21,57 +20,54 @@ private static final String query = "insert into user(Name,Purpose,Meetingperson
 
 @Override
 protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-	PrintWriter pw=res.getWriter();
-	res.setContentType("text/html");
-	pw.println("<link rel='stylesheet' href='ttps://fonts.googleapis.com/css?family=Roboto:300,400,500,700'></link>");
-	String Name=req.getParameter("userName");
-	String Purpose=req.getParameter("purpose");
-	String Meetingperson=req.getParameter("meetingperson");
-	String Gender=req.getParameter("gender");
-	String Mobile=req.getParameter("mobile");
-	String City=req.getParameter("city");
-	String Date=req.getParameter("date");
-	String Intime=req.getParameter("intime");
-	String Outtime=req.getParameter("outtime");
-	String Email=req.getParameter("email");
+    PrintWriter pw=res.getWriter();
+    res.setContentType("text/html");
+    pw.println("<link rel='stylesheet' href='ttps://fonts.googleapis.com/css?family=Roboto:300,400,500,700'></link>");
+    String Name=req.getParameter("userName");
+    String Purpose=req.getParameter("purpose");
+    String Meetingperson=req.getParameter("meetingperson");
+    String Gender=req.getParameter("gender");
+    String Mobile=req.getParameter("mobile");
+    String City=req.getParameter("city");
+    String Date=req.getParameter("date");
+    String Intime=req.getParameter("intime");
+    String Outtime=req.getParameter("outtime");
+    String Email=req.getParameter("email");
+    LocalTime currentTime = LocalTime.now();
 
-	 try {
-         Class.forName("com.mysql.cj.jdbc.Driver");
-     }catch(Exception e) {
-         e.printStackTrace();
-     }
-	
-	try(Connection con = DriverManager.getConnection("jdbc:mysql:///fdem","root","root");
-          PreparedStatement ps = con.prepareStatement(query);){
-          ps.setString(1, Name);
-          ps.setString(2, Purpose);
-          ps.setString(3, Meetingperson);
-          ps.setString(4, Gender);
-          ps.setString(5, Mobile);
-          ps.setString(6, City);
-          ps.setString(7, Date);
-          ps.setString(8,Intime);
-          ps.setString(9, Outtime);
-          ps.setString(10, Email);
-          //execute the query
-          int count = ps.executeUpdate();
-          pw.println("<div class='card' style='margin:auto;width:300px;margin-top:100px'>");
-          if(count==1) {
-              pw.println("<h2 class='bg-sucess text-light text-center'>Record Registered Successfully</h2>");
-          }else {
-              pw.println("<h2 class='bg-danger text-light text-center'>Record Not Registered</h2>");
-          }
-      }catch(SQLException se) {
-          pw.println("<h2 class='bg-danger text-light text-center'>"+se.getMessage()+"</h2>");
-          se.printStackTrace();
-      }catch(Exception e) {
-          e.printStackTrace();
-      }
-      pw.println("<a href='home.html'><button class='btn btn-outline-success'>Home</button></a>");
-      pw.println("</div>");
-    
-      pw.close();
-  }
+    // Check if the intime is before the current time
+    if (LocalTime.parse(Intime).equals(currentTime)) {
+        pw.println("<div class='card' style='margin:auto;width:300px;margin-top:100px'>");
+        pw.println("<h2 class='bg-danger text-light text-center'>Intime should be greater than or equal to current time</h2>");
+        pw.println("<a href='home.html'><button class='btn btn-outline-success'>Home</button></a>");
+        pw.println("</div>");
+        pw.close();
+        return;
+    }
+    if (LocalTime.parse(Outtime).isBefore(LocalTime.parse(Intime))) {
+        pw.println("<div class='card' style='margin:auto;width:300px;margin-top:100px'>");
+        pw.println("<h2 class='bg-danger text-light text-center'>Outtime should be greater than intime</h2>");
+        pw.println("<a href='home.html'><button class='btn btn-outline-success'>Home</button></a>");
+        pw.println("</div>");
+        pw.close();
+        return;
+    }
+    ServletUtils myClass = new ServletUtils();
+    boolean success = myClass.insertData(Name, Purpose, Meetingperson, Gender, Mobile, City, Date, Intime, Outtime, Email);
+    if (success) {
+        pw.println("<div class='card' style='margin:auto;width:300px;margin-top:100px'>");
+        pw.println("<h2 class='bg-success text-light text-center'>Registration successful!</h2>");
+        pw.println("<a href='home.html'><button class='btn btn-outline-success'>Home</button></a>");
+        pw.println("</div>");
+    } else {
+        pw.println("<div class='card' style='margin:auto;width:300px;margin-top:100px'>");
+        pw.println("<h2 class='bg-danger text-light text-center'>Registration failed. Please try again later.</h2>");
+        pw.println("<a href='home.html'><button class='btn btn-outline-success'>Home</button></a>");
+        pw.println("</div>");
+    }
+    pw.close();
+}
+
 	  
 
   @Override
